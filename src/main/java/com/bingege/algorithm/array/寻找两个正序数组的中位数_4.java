@@ -65,58 +65,41 @@ public class 寻找两个正序数组的中位数_4 {
      * O(log(min(m,n)))
      */
     public double findMedianSortedArrays(int[] nums1, int[] nums2) {
-
-        //确保nums1 数组长度大于 nums2
-        int m = nums1.length;
-        int n = nums2.length;
-
-        if (m < n) {
-            findMedianSortedArrays(nums2, nums1);
+        //时间复杂度为 O(log(m + n)) -》表示二分查找法，取最小数组
+        //比较长度，获取最短数组 确定 m<=n
+        int[] A=nums1,B=nums2;
+        int m = A.length;
+        int n = B.length;
+        if (m > n) {
+            int[] temp = A; A = B; B = temp;
+            int tmp = m; m = n; n = tmp;
         }
-        int max = m;
-        int min = 0;
-
-        while (min <= max) {
-            //找到中位数的下标，每次
-            //长数组的中位数下标
-            int i = (min + max) / 2;
-            //短数组的中位数下标
-            int j = (m + n + 1) / 2 - i;
-            // i 需要增大
-            if (j != 0 && i != m && nums2[j - 1] > nums1[i]) {
-                min = i + 1;
+        //最大遍历区间 0—m，进行二分
+        int iMin = 0, iMax = m, halfLen = (m + n + 1) / 2;
+        while (iMin <= iMax) {
+            int i = (iMin + iMax) / 2; //取数组m的中间值，向左右偏移量
+            int j = halfLen - i; //取数组n的中间值，向左右偏移量
+            if (i < iMax && B[j-1] > A[i]){
+                iMin = i + 1; // i is too small
             }
-            // i 需要减小
-            else if (i != 0 && j != n && nums1[i - 1] > nums2[j]) {
-                max = i - 1;
-            } else { // 达到要求，并且将边界条件列出来单独考虑
+            else if (i > iMin && A[i-1] > B[j]) {
+                iMax = i - 1; // i is too big
+            }
+            else { // i is perfect
                 int maxLeft = 0;
-                if (i == 0) {
-                    maxLeft = nums2[j - 1];
-                } else if (j == 0) {
-                    maxLeft = nums1[i - 1];
-                } else {
-                    maxLeft = Math.max(nums1[i - 1], nums2[j - 1]);
-                }
-                // 奇数的话不需要考虑右半部分
-                if ((m + n) % 2 == 1) {
-                    return maxLeft;
-                }
+                if (i == 0) { maxLeft = B[j-1]; }
+                else if (j == 0) { maxLeft = A[i-1]; }
+                else { maxLeft = Math.max(A[i-1], B[j-1]); }
+                if ( (m + n) % 2 == 1 ) { return maxLeft; }
 
                 int minRight = 0;
-                if (i == m) {
-                    minRight = nums2[j];
-                } else if (j == n) {
-                    minRight = nums1[i];
-                } else {
-                    minRight = Math.min(nums2[j], nums1[i]);
-                }
+                if (i == m) { minRight = B[j]; }
+                else if (j == n) { minRight = A[i]; }
+                else { minRight = Math.min(B[j], A[i]); }
 
-                //如果是偶数的话返回结果
                 return (maxLeft + minRight) / 2.0;
             }
         }
-
         return 0.0;
     }
 }
