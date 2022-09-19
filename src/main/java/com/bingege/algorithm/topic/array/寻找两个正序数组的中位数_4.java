@@ -1,4 +1,4 @@
-package com.bingege.algorithm.array;
+package com.bingege.algorithm.topic.array;
 
 /**
  * @author xiaob
